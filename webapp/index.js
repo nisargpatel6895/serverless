@@ -1,6 +1,6 @@
 exports.handler = function (event, context, callback) {
 
-    // Load the SDK for JavaScript
+    // Load the SDK for JavaScripttt
     var AWS = require('aws-sdk');
     //  var nodemailer = require('nodemailer');
     var ses = new AWS.SES();
