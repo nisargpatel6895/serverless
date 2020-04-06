@@ -1,0 +1,83 @@
+version: 2
+jobs:
+  build-lambda-function:
+    docker:
+      - image: circleci/node:12.14.1
+    steps:
+      - checkout
+      # Configure aws cli
+      - run:
+          name: Install packages
+          command: sudo apt-get update && sudo apt-get install wget zip unzip -y
+      - run:
+          name: Install python
+          command: |
+            sudo apt install apt-utils -y
+            sudo apt-get install python3 -y
+            sudo apt install python3-pip -y
+      - run:
+          name: Install AWS Cli
+          command: sudo pip3 install awscli && export PATH=$PATH:$HOME/.local/bin
+      - run:
+          name: Configure AWS Access Key ID
+          command: |
+            aws configure set aws_access_key_id \
+            ${AWS_ACCESS_KEY} \
+            --profile default
+      - run:
+          name: Configure AWS Secret Access Key
+          command: |
+            aws configure set aws_secret_access_key \
+            ${AWS_SECRET_KEY} \
+            --profile default
+      - run:
+          name: Configure AWS region
+          command: |
+            aws configure set region ${AWS_REGION} \
+            --profile default
+      - run:
+          name: Install aws sdk
+          command: |
+            ls -al
+            cd webapp
+            pwd
+            ls -al
+            npm install aws-sdk
+      - run:
+          name: Zip artifact
+          command: |
+            cd ~
+            ls -al
+            mkdir lambda_function
+            ls -al
+            cd ~/project/webapp
+            zip -r csye6225-lambda-${CIRCLE_BUILD_NUM}.zip node_modules index.js
+            pwd
+            ls
+            mv csye6225-lambda-${CIRCLE_BUILD_NUM}.zip ~/lambda_function
+            pwd
+            ls
+      - run:
+          name: Update function
+          command: |
+            pwd
+            cd ~
+            ls
+            function_name=$(aws lambda get-function --function-name MyLambdaFunction --query Configuration.FunctionName)
+            filename=csye6225-lambda-${CIRCLE_BUILD_NUM}.zip
+            if [[ $function_name == '"MyLambdaFunction"' ]]; then \
+                aws lambda update-function-code --zip-file=fileb://lambda_function/${filename} --region=us-east-1 --function-name=MyLambdaFunction; \
+                echo 'Lambda Function Updated!'; \
+              else \
+                echo 'Failed to update Lambda Function. Lambda Function does not exist!'; \
+            fi
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build-lambda-function:
+          filters:
+            # TODO: change branch
+            branches:
+              only:
+                - assignment-10
