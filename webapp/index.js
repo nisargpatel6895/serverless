@@ -17,7 +17,7 @@ exports.handler = function (event, context, callback) {
         domain = "example.com";
     }
 
-    var message = JSON.parse(event.Records[0].Sns.Message);
+    var message = event.Records[0].Sns.Message;
     console.log('Message received from SNS:', message);
 
     //Added to make an entry to Dynamo DB
