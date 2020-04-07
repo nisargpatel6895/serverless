@@ -88,7 +88,7 @@ exports.handler = function (event, context, callback) {
                     Data: "Bills due:"
                 }
             },
-            Source: "donotreply@no-reply." + domain
+            Source: "donotreply@no-reply.example.com"
         };
         console.log('===SENDING EMAIL===');
         var email = ses.sendEmail(eParams, function (err, data) {
