@@ -81,7 +81,7 @@ exports.handler = function (event, context, callback) {
                 Body: {
                     Text: {
                         // Data: message.rows
-                        Data: message.rows
+                        Data: "message.rows"
                     }
                 },
                 Subject: {
