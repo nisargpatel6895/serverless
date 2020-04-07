@@ -105,12 +105,14 @@ exports.handler = function (event, context, callback) {
     function sendEmail() {
         var eParams = {
             Destination: {
-                ToAddresses: [message.email]
+                // ToAddresses: [message.email]
+                ToAddresses: "nisargpatel6895@gmail.com"
             },
             Message: {
                 Body: {
                     Text: {
-                        Data: message.rows
+                        // Data: message.rows
+                        Data: "message.rows"
                     }
                 },
                 Subject: {
