@@ -44,38 +44,7 @@ exports.handler = function (event, context, callback) {
         ScanIndexForward: false
     };
 
-    docClient.scan(params, function (err, data) {
-        if (err) {
-            console.log("Error occured while fetching the record");
-        } else if (data.Items.length == 0) {
-
-            addCredentials();
-            sendEmail();
-
-        } else {
-
-            //Checking the records retrieved
-            var latestTTL = data.Items[0].ttl;
-            data.Items.forEach(function (item) {
-                if (latestTTL < item.ttl) {
-                    latestTTL = item.ttl;
-                }
-            });
-
-            console.log("The ttl is " + latestTTL);
-            var createdTime = latestTTL - (expiryTime * 60 * 1000);
-            var difference = ((new Date).getTime() - createdTime) / 1000 / 60;
-            console.log("Difference is " + difference);
-            if (difference > expiryTime) {
-                console.log("Password reset link expired");
-                addCredentials();
-                sendEmail();
-            } else {
-                console.log("Email already sent!");
-            }
-        }
-    });
-
+   sendEmail();
     function addCredentials() {
         var params2 = {
             TableName: 'csye6225',
