@@ -1,6 +1,6 @@
 exports.handler = function (event, context, callback) {
 
-    // Load the SDK for JavaScripttt
+    // Load the SDK for JavaScript
     var AWS = require('aws-sdk');
     //  var nodemailer = require('nodemailer');
     var ses = new AWS.SES();
@@ -10,14 +10,14 @@ exports.handler = function (event, context, callback) {
     });
 
     //Set the domain name from the environment variable
-    var domain = process.env.DOMAIN;
+    var domain = process.env.DOMAIN_NAME;
     domain = domain.substring(0, domain.length - 1);
     console.log("Domain is " + domain);
     if (null == domain) {
         domain = "example.com";
     }
 
-    var message = event.Records[0].Sns.Message;
+    var message = JSON.parse(event.Records[0].Sns.Message);
     console.log('Message received from SNS:', message);
 
     //Added to make an entry to Dynamo DB
@@ -25,10 +25,6 @@ exports.handler = function (event, context, callback) {
     var ddb = new AWS.DynamoDB({
         apiVersion: '2012-10-08'
     });
-
-    const uuidv1 = require('uuid/v1');
-    var token = uuidv1();
-
     var expiryTime = 1; //1 minutes
     var ttl = (new Date).getTime() + (expiryTime * 60 * 1000); //Adding 20 mins to the current timestamp
 
@@ -40,7 +36,7 @@ exports.handler = function (event, context, callback) {
             "#username": "username"
         },
         ExpressionAttributeValues: {
-            ":username": message
+            ":username": message.email
         },
         FilterExpression: "#username = :username and attribute_not_exists(Removed)",
         Limit: 20,
@@ -109,16 +105,16 @@ exports.handler = function (event, context, callback) {
     function sendEmail() {
         var eParams = {
             Destination: {
-                ToAddresses: [message]
+                ToAddresses: [message.email]
             },
             Message: {
                 Body: {
                     Text: {
-                        Data: "Your reset password link is : http://" + domain + "/reset?email=" + message + "&token=" + token
+                        Data: message.rows
                     }
                 },
                 Subject: {
-                    Data: "Reset Password Email"
+                    Data: "Bills due:"
                 }
             },
             Source: "donotreply@no-reply." + domain
