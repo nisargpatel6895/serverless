@@ -80,4 +80,4 @@ workflows:
             # TODO: change branch
             branches:
               only:
-                - assignment-10
+                - master

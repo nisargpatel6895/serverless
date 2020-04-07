@@ -75,7 +75,7 @@ exports.handler = function (event, context, callback) {
         var eParams = {
             Destination: {
                 // ToAddresses: [message.email]
-                ToAddresses: ["nisargpatel6895@gmail.com"]
+                ToAddresses: ["success@simulator.amazonses.com"]
             },
             Message: {
                 Body: {
